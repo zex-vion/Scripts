@@ -137,7 +137,7 @@ local Accent = WindUI:Gradient({
 local Window = WindUI:CreateWindow({
   Title = "Blue Lock Squad Helper",
   Icon = "zap",
-  Author = "Don't ever to use auto roll & filter inside the game, just using that ive been created it.",
+  Author = "Enjoy",
   Folder = "BLSquadHelper",
   Theme = "Dark",
   Acrylic = true,
@@ -174,6 +174,15 @@ local ManSec = Tab:Section({ Title = "Manual", Icon = "hand", Opened = true })
 
 local freeToggle, autoToggle, rollBaruToggle
 
+SkipSec:Paragraph({
+  Title = "Informations",
+  Desc = "For anyone who hasn't purchased the Game Pass auto-roll feature, do not use the in-game auto-roll and filters; instead, use the ones provided by the script, namely “Custom Auto Roll” and “Filters.”",
+         "Fast Skip: Skip draw card animation instantly.",
+         "Custom Auto Roll: Its like a auto roll gamepass.",
+         "Fresh Roll: Roll → cek filter → restart kalau tidak match. If you're stuck and can't turn on the fresh roll, just click restart first."
+  Color = "Grey",
+})
+
 freeToggle = SkipSec:Toggle({
   Title = "Free Skip",
   Desc = "Skip draw card animation instantly",
@@ -199,7 +208,7 @@ autoToggle = AutoSec:Toggle({
 
 rollBaruToggle = AutoSec:Toggle({
   Title = "Fresh Roll",
-  Desc = "Roll → Check Filters → Restart (If matching filters → Stop). Recommend to set filters first. Stops on a filter match. Ff you're stuck and can't turn on the fresh roll, just click restart first.",
+  Desc = "Recommend to set filters first. Stops on a filter match.",
   Icon = "refresh-ccw",
   Value = getgenv().FreeRollBaru == true,
   Callback = function(s)
@@ -344,7 +353,7 @@ KeySec:Dropdown({
     if not kc then return end
     getgenv().UIToggleKeyName = pick
     pcall(function() Window:SetToggleKey(kc) end)
-    pcall(function() Window:SetAuthor("Don't ever to use auto roll & filter inside the game, just using that ive been created it.") end)
+    pcall(function() Window:SetAuthor("Enjoy") end)
   end,
 })
 
