@@ -137,7 +137,7 @@ local Accent = WindUI:Gradient({
 local Window = WindUI:CreateWindow({
   Title = "Blue Lock Squad Helper",
   Icon = "zap",
-  Author = "Enjoy",
+  Author = "Don't ever to use auto roll & filter inside the game, just using that ive been created it.",
   Folder = "BLSquadHelper",
   Theme = "Dark",
   Acrylic = true,
@@ -344,7 +344,7 @@ KeySec:Dropdown({
     if not kc then return end
     getgenv().UIToggleKeyName = pick
     pcall(function() Window:SetToggleKey(kc) end)
-    pcall(function() Window:SetAuthor("Enjoy") end)
+    pcall(function() Window:SetAuthor("Don't ever to use auto roll & filter inside the game, just using that ive been created it.") end)
   end,
 })
 
