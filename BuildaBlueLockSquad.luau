@@ -129,7 +129,7 @@ local function cardHit(c)
   return false, ""
 end
 
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/main/main.lua"))()
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 local Accent = WindUI:Gradient({
   ["0"] = { Color = Color3.fromHex("050507"), Transparency = 0 },
   ["100"] = { Color = Color3.fromHex("23262f"), Transparency = 0 },
