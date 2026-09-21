@@ -176,10 +176,7 @@ local freeToggle, autoToggle, rollBaruToggle
 
 SkipSec:Paragraph({
   Title = "Informations",
-  Desc = "For anyone who hasn't purchased the Game Pass auto-roll feature, do not use the in-game auto-roll and filters; instead, use the ones provided by the script, namely “Custom Auto Roll” and “Filters.”",
-         "Fast Skip: Skip draw card animation instantly.",
-         "Custom Auto Roll: Its like a auto roll gamepass.",
-         "Fresh Roll: Roll → cek filter → restart kalau tidak match. If you're stuck and can't turn on the fresh roll, just click restart first.",
+  Desc = "For anyone who hasn't purchased the Game Pass auto-roll feature, do not use the in-game auto-roll and filters; instead, use the ones provided by the script, namely “Custom Auto Roll” and “Filters”.",
   Color = "Grey",
 })
 
@@ -194,6 +191,11 @@ freeToggle = SkipSec:Toggle({
   end,
 })
 
+SkipSec:Paragraph({
+  Title = "Informations",
+  Desc = "Custom Auto Roll: Its like a auto roll gamepass.",
+  Color = "Grey",
+})
 autoToggle = AutoSec:Toggle({
   Title = "Custom Auto Roll",
   Desc = "Recommend to set filters first. Stops on a filter match.",
@@ -206,6 +208,11 @@ autoToggle = AutoSec:Toggle({
   end,
 })
 
+SkipSec:Paragraph({
+  Title = "Informations",
+  Desc = "Fresh Roll: ROLL → CHECK FILTERS → RESTART (If doesn't match with filter). If you're stuck and can't turn on the fresh roll, just click “RESTART” first.",
+  Color = "Grey",
+})
 rollBaruToggle = AutoSec:Toggle({
   Title = "Fresh Roll",
   Desc = "Recommend to set filters first. Stops on a filter match.",
