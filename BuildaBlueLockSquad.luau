@@ -25,10 +25,10 @@ end
 
 local function defaultFilter()
   return {
-    Rarities = {}, -- empty = no rarity filter
-    Variants = {}, -- empty = no variant filter
-    Teams = {}, -- empty = every team passes
-    MinOverall = 0, -- 0 = off, our own extra filter
+    Rarities = {},
+    Variants = {},
+    Teams = {},
+    MinOverall = 0, 
   }
 end
 if type(getgenv().FreeFilter) ~= "table" then
@@ -129,7 +129,7 @@ local function cardHit(c)
   return false, ""
 end
 
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/main/main.lua"))()
 local Accent = WindUI:Gradient({
   ["0"] = { Color = Color3.fromHex("050507"), Transparency = 0 },
   ["100"] = { Color = Color3.fromHex("23262f"), Transparency = 0 },
@@ -199,7 +199,7 @@ autoToggle = AutoSec:Toggle({
 
 rollBaruToggle = AutoSec:Toggle({
   Title = "Fresh Roll",
-  Desc = "Roll → Check Filters → Restart (If matching filters → Stop). Recommend to set filters first. Stops on a filter match.",
+  Desc = "Roll → Check Filters → Restart (If matching filters → Stop). Recommend to set filters first. Stops on a filter match. Ff you're stuck and can't turn on the fresh roll, just click restart first.",
   Icon = "refresh-ccw",
   Value = getgenv().FreeRollBaru == true,
   Callback = function(s)
