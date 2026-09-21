@@ -179,7 +179,7 @@ SkipSec:Paragraph({
   Desc = "For anyone who hasn't purchased the Game Pass auto-roll feature, do not use the in-game auto-roll and filters; instead, use the ones provided by the script, namely “Custom Auto Roll” and “Filters.”",
          "Fast Skip: Skip draw card animation instantly.",
          "Custom Auto Roll: Its like a auto roll gamepass.",
-         "Fresh Roll: Roll → cek filter → restart kalau tidak match. If you're stuck and can't turn on the fresh roll, just click restart first."
+         "Fresh Roll: Roll → cek filter → restart kalau tidak match. If you're stuck and can't turn on the fresh roll, just click restart first.",
   Color = "Grey",
 })
 
