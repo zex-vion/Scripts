@@ -1,14 +1,4 @@
--- ====================================================
--- BLUE LOCK HELPER - GUI TEMPLATE (manual edit)
--- 1) Edit ONLY the "GUI EDIT AREA" below
--- 2) Save the file, then ask me to reload it
--- 3) Do NOT touch the ENGINE unless you know what it does
--- 4) Do NOT use WindUI:Notify (it crashes)
--- ====================================================
-
 local Players = game:GetService("Players")
--- Portability shims (so this file also runs as a plain script, not only via live-reload):
--- getgenv fallback + STATE fallback for executors without them.
 if getgenv == nil then getgenv = function() return _G end end
 local HAS_STATE = typeof(STATE) == "table" and typeof((STATE :: any).alive) == "function"
 local function engineAlive()
@@ -33,8 +23,6 @@ local function toggleKeyCode()
   return Enum.KeyCode.RightControl
 end
 
--- Custom filter: multi-select dropdowns synced to the game's REAL filter table
--- (exact same keys as the game's own filter UI: rarity/variant/team)
 local function defaultFilter()
   return {
     Rarities = {}, -- empty = no rarity filter
@@ -46,7 +34,6 @@ end
 if type(getgenv().FreeFilter) ~= "table" then
   getgenv().FreeFilter = defaultFilter()
 else
-  -- migrate legacy format (boolean toggles) to dropdown format
   local old = getgenv().FreeFilter :: any
   if old.Rarities == nil and old.Variants == nil then
     local nf = defaultFilter()
@@ -57,7 +44,6 @@ else
     nf.MinOverall = tonumber(old.MinOverall) or 0
     getgenv().FreeFilter = nf
   else
-    -- make sure every key exists (empty selection is valid = no filter)
     if old.Rarities == nil then old.Rarities = {} end
     if old.Variants == nil then old.Variants = {} end
     if old.Teams == nil then old.Teams = {} end
@@ -69,7 +55,6 @@ local filt = getgenv().FreeFilter :: any
 local RARITY_KEYS = { "Common", "Rare", "Epic", "Legendary", "Mythic", "Elusive" }
 local VARIANT_KEYS = { "Shiny", "Awakened", "New" }
 
--- ================= ENGINE (do not edit) =================
 local function normalizeList(v)
   local out = {}
   if type(v) == "string" then
@@ -86,7 +71,6 @@ local function normalizeList(v)
   return out
 end
 
--- write dropdown picks into the game's real filter table
 local function syncFilters()
   local f = getgenv().FreeFilter :: any
   local rar = normalizeList(f.Rarities)
@@ -125,8 +109,6 @@ end
 applySpeed(getgenv().FreeRollSpeed)
 syncFilters()
 
--- match = the game's OWN function (rarity+variant+team) OR our MinOverall
--- everything empty = every card passes (stops on the next roll)
 local function cardHit(c)
   local gf = getgenv().FreeFilter :: any
   if #(gf.Rarities or {}) == 0 and #(gf.Variants or {}) == 0 and #(gf.Teams or {}) == 0
@@ -147,7 +129,6 @@ local function cardHit(c)
   return false, ""
 end
 
--- ============ GUI EDIT AREA (edit here) ============
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 local Accent = WindUI:Gradient({
   ["0"] = { Color = Color3.fromHex("050507"), Transparency = 0 },
@@ -185,7 +166,6 @@ if HAS_STATE then
 end
 Window:Tag({ Title = "v1.0", Color = Color3.fromHex("#3a3d47") })
 
--- TAB 1: Builder --
 local Tab = Window:Tab({ Title = "Builders", Icon = "users" })
 
 local SkipSec = Tab:Section({ Title = "Fast Skip", Icon = "fast-forward", Opened = true })
@@ -256,15 +236,6 @@ ManSec:Button({
   end,
 })
 
--- EXAMPLE: your own button (remove -- to enable):
--- ManSec:Button({
---   Title = "Example Button",
---   Desc = "Change this text",
---   Icon = "star",
---   Callback = function() print("pressed") end,
--- })
-
--- TAB 2: Filter (same options as the game's own filter) --
 local FTab = Window:Tab({ Title = "Filters", Icon = "list-filter" })
 
 local RarSec = FTab:Section({ Title = "Rarity", Icon = "gem", Opened = true })
@@ -377,10 +348,8 @@ KeySec:Dropdown({
   end,
 })
 
--- open the Builder tab on first run
 pcall(function() Window:SelectTab(Tab) end)
 
--- ============ ENGINE LOOP (do not edit) ============
 print("[bl-helper] template active")
 
 task.spawn(function()
@@ -433,7 +402,6 @@ task.spawn(function()
         end
       end
     end
-    -- MODE 3: Fresh Roll (roll -> check filter -> restart), stops on match
     if getgenv().FreeRollBaru == true and not drawing and not spinning then
       local cards = nil
       pcall(function() cards = (bstore :: any).Draw().Cards or {} end)
