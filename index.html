@@ -1,105 +1,468 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Build a Blue Lock Squad - Script</title>
+
+    <title>Build a Blue Lock Squad | Script</title>
+
+    <meta name="description" content="Build a Blue Lock Squad Roblox Script">
 
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            background: #0f1117;
-            color: white;
+        :root {
+            --bg: #050812;
+            --card: rgba(13, 20, 38, 0.78);
+            --blue: #1683ff;
+            --blue-light: #55b5ff;
+            --text: #f4f7ff;
+            --muted: #8994aa;
+            --border: rgba(82, 156, 255, 0.18);
         }
 
-        .container {
-            width: 90%;
-            max-width: 650px;
-            padding: 30px;
+        body {
+            min-height: 100vh;
+            font-family: Inter, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 50% -10%, rgba(0, 132, 255, 0.25), transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(0, 70, 255, 0.12), transparent 35%),
+                var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* Background effects */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 45px 45px;
+            mask-image: linear-gradient(to bottom, black, transparent);
+        }
+
+        .glow {
+            position: fixed;
+            width: 350px;
+            height: 350px;
+            background: rgba(0, 115, 255, 0.12);
+            filter: blur(100px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .glow.one {
+            top: 15%;
+            left: -150px;
+        }
+
+        .glow.two {
+            bottom: 0;
+            right: -150px;
+        }
+
+        /* Navbar */
+
+        nav {
+            width: 100%;
+            padding: 22px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            color: var(--blue-light);
+        }
+
+        .version {
+            padding: 7px 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(20, 35, 65, 0.45);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* Main */
+
+        main {
+            width: min(900px, 92%);
+            margin: 50px auto 80px;
             text-align: center;
-            background: #181b23;
-            border-radius: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(16, 29, 52, 0.65);
+            color: #9fcfff;
+            font-size: 12px;
+            font-weight: 600;
+            animation: fadeUp .7s ease;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #39a9ff;
+            box-shadow: 0 0 12px #1683ff;
         }
 
         h1 {
-            margin-bottom: 10px;
+            margin-top: 24px;
+            font-size: clamp(40px, 7vw, 72px);
+            line-height: 0.98;
+            letter-spacing: -3px;
+            font-weight: 900;
+            background: linear-gradient(180deg, #ffffff 20%, #75bfff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeUp .8s ease;
         }
 
-        p {
-            color: #aeb4c0;
-        }
-
-        .code {
-            margin-top: 25px;
-            padding: 18px;
-            background: #0d0f14;
-            border-radius: 10px;
-            text-align: left;
-            word-break: break-all;
-            font-family: Consolas, monospace;
-            font-size: 14px;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .subtitle {
+            max-width: 600px;
+            margin: 22px auto 0;
+            color: var(--muted);
+            line-height: 1.7;
             font-size: 15px;
-            font-weight: bold;
+            animation: fadeUp .9s ease;
+        }
+
+        /* Ad slot */
+
+        .ad-container {
+            margin: 42px auto 25px;
+            width: min(728px, 100%);
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed rgba(100, 150, 220, 0.18);
+            border-radius: 12px;
+            color: #59657a;
+            font-size: 11px;
+            background: rgba(10, 17, 31, 0.4);
+        }
+
+        /* Script card */
+
+        .card {
+            margin-top: 28px;
+            padding: 26px;
+            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--card);
+            backdrop-filter: blur(18px);
+            box-shadow:
+                0 20px 70px rgba(0, 0, 0, 0.35),
+                inset 0 1px rgba(255,255,255,0.04);
+            animation: fadeUp 1s ease;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .status {
-            margin-top: 12px;
-            color: #7ee787;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #6dd6ff;
+            font-size: 11px;
+        }
+
+        .status::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #42c5ff;
+            box-shadow: 0 0 8px #42c5ff;
+        }
+
+        .code {
+            padding: 20px;
+            border-radius: 13px;
+            background: #050912;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow-x: auto;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #a8d8ff;
+        }
+
+        .copy-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border: 0;
+            border-radius: 11px;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #087cff, #1ba5ff);
+            box-shadow: 0 8px 30px rgba(0, 126, 255, 0.22);
+            transition: .2s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 126, 255, 0.35);
+        }
+
+        .copy-btn:active {
+            transform: scale(.98);
+        }
+
+        .copied {
             display: none;
+            margin-top: 12px;
+            text-align: center;
+            color: #66d9ff;
+            font-size: 12px;
+        }
+
+        /* Info */
+
+        .info {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .info-box {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(10, 18, 34, 0.55);
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .info-box span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* Footer */
+
+        footer {
+            margin-top: 55px;
+            color: #4f5b70;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* Animation */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile */
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding: 18px 5%;
+            }
+
+            main {
+                margin-top: 35px;
+            }
+
+            h1 {
+                letter-spacing: -2px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .info {
+                grid-template-columns: 1fr;
+            }
+
+            .code {
+                font-size: 11px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <h1>Build a Blue Lock Squad</h1>
+    <div class="glow one"></div>
+    <div class="glow two"></div>
 
-        <p>Your script is ready.</p>
-
-        <div class="code" id="loadstring">
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/zex-vion/Scripts/main/BuildaBlueLockSquad"))()
+    <nav>
+        <div class="logo">
+            ZEX<span>VION</span>
         </div>
 
-        <button onclick="copyLoadstring()">
-            Copy Loadstring
-        </button>
-
-        <div class="status" id="status">
-            ✓ Loadstring copied!
+        <div class="version">
+            Roblox Script
         </div>
-    </div>
+    </nav>
+
+    <main>
+
+        <div class="badge">
+            <span class="dot"></span>
+            SCRIPT AVAILABLE
+        </div>
+
+        <h1>
+            Build a Blue<br>
+            Lock Squad
+        </h1>
+
+        <p class="subtitle">
+            Your script is ready. Copy the loadstring below
+            and execute it in your Roblox executor.
+        </p>
+
+        <!-- ADVERTISEMENT SLOT -->
+        <div class="ad-container">
+            ADVERTISEMENT
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+                <div class="card-title">
+                    Loadstring
+                </div>
+
+                <div class="status">
+                    Online
+                </div>
+            </div>
+
+            <div class="code" id="loadstring">
+loadstring(game:HttpGet("https://raw.githubusercontent.com/zex-vion/Scripts/main/BuildaBlueLockSquad.luau"))()
+            </div>
+
+            <button class="copy-btn" onclick="copyLoadstring()">
+                Copy Loadstring
+            </button>
+
+            <div class="copied" id="copied">
+                ✓ Loadstring copied to clipboard
+            </div>
+
+        </div>
+
+        <div class="info">
+
+            <div class="info-box">
+                <strong>⚡ Fast</strong>
+                <span>Lightweight script loader</span>
+            </div>
+
+            <div class="info-box">
+                <strong>🔄 Updated</strong>
+                <span>Script can be updated remotely</span>
+            </div>
+
+            <div class="info-box">
+                <strong>🛡️ Easy</strong>
+                <span>One-click loadstring copy</span>
+            </div>
+
+        </div>
+
+        <!-- SECOND AD SLOT -->
+        <div class="ad-container" style="margin-top:25px;">
+            ADVERTISEMENT
+        </div>
+
+        <footer>
+            © 2026 ZexVion. All rights reserved.
+        </footer>
+
+    </main>
 
     <script>
+
         function copyLoadstring() {
-            const text = document.getElementById("loadstring").innerText;
 
-            navigator.clipboard.writeText(text).then(() => {
-                document.getElementById("status").style.display = "block";
+            const text =
+                document.getElementById("loadstring").innerText.trim();
 
-                setTimeout(() => {
-                    document.getElementById("status").style.display = "none";
-                }, 2000);
-            });
+            navigator.clipboard.writeText(text)
+                .then(() => {
+
+                    const status =
+                        document.getElementById("copied");
+
+                    status.style.display = "block";
+
+                    setTimeout(() => {
+                        status.style.display = "none";
+                    }, 2500);
+
+                })
+                .catch(() => {
+
+                    alert("Unable to copy. Please copy it manually.");
+
+                });
         }
+
     </script>
 
 </body>
 </html>
+```
