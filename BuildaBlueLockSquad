@@ -1,5 +1,5 @@
 local Players = game:GetService("Players")
-if getgenv == nil then getgenv = function() return _G end end
+if getenv == nil then getenv = function() return _G end end
 local HAS_STATE = typeof(STATE) == "table" and typeof((STATE :: any).alive) == "function"
 local function engineAlive()
   if HAS_STATE then return (STATE :: any).alive() end
@@ -7,18 +7,18 @@ local function engineAlive()
 end
 local LocalPlayer = Players.LocalPlayer
 local MPS = game:GetService("MarketplaceService")
-local bstore = require(LocalPlayer.PlayerScripts.Client.Stores.BuilderStore)
-local cstore = require(LocalPlayer.PlayerScripts.Client.Stores.CollectionStore)
+local builderStore = require(LocalPlayer.PlayerScripts.Client.Stores.BuilderStore)
+local collectionStore = require(LocalPlayer.PlayerScripts.Client.Stores.CollectionStore)
 local mpsAny = MPS :: any
-local storeAny = bstore :: any
+local storeAny = builderStore :: any
 
-if getgenv().FreeAutoRoll == nil then getgenv().FreeAutoRoll = false end
-if getgenv().FreeRollBaru == nil then getgenv().FreeRollBaru = false end
-getgenv().FreeSkip_On = true
-if getgenv().FreeRollSpeed == nil then getgenv().FreeRollSpeed = 10 end
-if type(getgenv().UIToggleKeyName) ~= "string" then getgenv().UIToggleKeyName = "RightControl" end
+if getenv().FreeAutoRoll == nil then getenv().FreeAutoRoll = false end
+if getenv().NewFreeRoll == nil then getenv().NewFreeRoll = false end
+getenv().FreeSkip_On = true
+if getenv().FreeRollSpeed == nil then getenv().FreeRollSpeed = 10 end
+if type(getenv().UIToggleKeyName) ~= "string" then getenv().UIToggleKeyName = "RightControl" end
 local function toggleKeyCode()
-  local ok, kc = pcall(function() return (Enum.KeyCode :: any)[getgenv().UIToggleKeyName] end)
+  local ok, kc = pcall(function() return (Enum.KeyCode :: any)[getenv().UIToggleKeyName] end)
   if ok and kc then return kc end
   return Enum.KeyCode.RightControl
 end
@@ -31,10 +31,10 @@ local function defaultFilter()
     MinOverall = 0, 
   }
 end
-if type(getgenv().FreeFilter) ~= "table" then
-  getgenv().FreeFilter = defaultFilter()
+if type(getenv().FreeFilter) ~= "table" then
+  getenv().FreeFilter = defaultFilter()
 else
-  local old = getgenv().FreeFilter :: any
+  local old = getenv().FreeFilter :: any
   if old.Rarities == nil and old.Variants == nil then
     local nf = defaultFilter()
     if old.Elusive then table.insert(nf.Rarities, "Elusive") end
@@ -42,7 +42,7 @@ else
     if old.Awakened then table.insert(nf.Variants, "Awakened") end
     if old.New ~= false then table.insert(nf.Variants, "New") end
     nf.MinOverall = tonumber(old.MinOverall) or 0
-    getgenv().FreeFilter = nf
+    getenv().FreeFilter = nf
   else
     if old.Rarities == nil then old.Rarities = {} end
     if old.Variants == nil then old.Variants = {} end
@@ -50,7 +50,7 @@ else
     if old.MinOverall == nil then old.MinOverall = 0 end
   end
 end
-local filt = getgenv().FreeFilter :: any
+local filt = getenv().FreeFilter :: any
 
 local RARITY_KEYS = { "Common", "Rare", "Epic", "Legendary", "Mythic", "Elusive" }
 local VARIANT_KEYS = { "Shiny", "Awakened", "New" }
@@ -72,20 +72,20 @@ local function normalizeList(v)
 end
 
 local function syncFilters()
-  local f = getgenv().FreeFilter :: any
+  local f = getenv().FreeFilter :: any
   local rar = normalizeList(f.Rarities)
-  local varr = normalizeList(f.Variants)
+  local var = normalizeList(f.Variants)
   local teams = normalizeList(f.Teams)
-  f.Rarities, f.Variants, f.Teams = rar, varr, teams
+  f.Rarities, f.Variants, f.Teams = rar, var, teams
   pcall(function()
-    local gf = (bstore :: any).AutoRollFilters()
+    local gf = (builderStore :: any).AutoRollFilters()
     for _, k in ipairs(RARITY_KEYS) do gf[k] = nil end
     for _, k in ipairs(VARIANT_KEYS) do gf[k] = nil end
     for k, _ in pairs(gf) do
       if type(k) == "string" and string.sub(k, 1, 5) == "Team:" then gf[k] = nil end
     end
     for _, k in ipairs(rar) do gf[k] = true end
-    for _, k in ipairs(varr) do gf[k] = true end
+    for _, k in ipairs(var) do gf[k] = true end
     for _, t in ipairs(teams) do gf["Team:" .. t] = true end
   end)
 end
@@ -101,16 +101,16 @@ pcall(function()
   pcall(function() storeAny.RefreshAutoRoll() end)
 end)
 local function applySpeed(v)
-  getgenv().FreeRollSpeed = v
+  getenv().FreeRollSpeed = v
   pcall(function()
     storeAny.RollSpeed = function() return v end
   end)
 end
-applySpeed(getgenv().FreeRollSpeed)
+applySpeed(getenv().FreeRollSpeed)
 syncFilters()
 
 local function cardHit(c)
-  local gf = getgenv().FreeFilter :: any
+  local gf = getenv().FreeFilter :: any
   if #(gf.Rarities or {}) == 0 and #(gf.Variants or {}) == 0 and #(gf.Teams or {}) == 0
     and (tonumber(gf.MinOverall) or 0) <= 0 then
     local cc0 = c :: any
@@ -121,7 +121,7 @@ local function cardHit(c)
     local cc = c :: any
     return true, tostring(cc.Name or cc.Id or "card")
   end
-  local mo = tonumber((getgenv().FreeFilter :: any).MinOverall) or 0
+  local mo = tonumber((getenv().FreeFilter :: any).MinOverall) or 0
   if mo > 0 then
     local ovr = tonumber((c :: any).Overall or 0) or 0
     if ovr >= mo then return true, tostring((c :: any).Name or "card") .. " (OVR" .. tostring((c :: any).Overall) .. ")" end
@@ -164,21 +164,21 @@ if HAS_STATE then
     pcall(function() Window:Destroy() end)
   end)
 end
+
 Window:Tag({ Title = "v1.0", Color = Color3.fromHex("#3a3d47") })
-
 local Tab = Window:Tab({ Title = "Builders", Icon = "users" })
-
+local InfoSec = Tab:Section({ Title = "Information", Icon = "info", Opened = true })
 local SkipSec = Tab:Section({ Title = "Fast Skip", Icon = "fast-forward", Opened = true })
 local AutoSec = Tab:Section({ Title = "Auto Modes", Icon = "bot", Opened = true })
 local ManSec = Tab:Section({ Title = "Manual", Icon = "hand", Opened = true })
 
-local freeToggle, autoToggle, rollBaruToggle
-
-SkipSec:Paragraph({
-  Title = "Informations",
+InfoSec:Paragraph({
+  Title = "Auto Roll & Filter Inside Game",
   Desc = "For anyone who hasn't purchased the Game Pass auto-roll feature, do not use the in-game auto-roll and filters; instead, use the ones provided by the script, namely “Custom Auto Roll” and “Filters”.",
   Color = "Grey",
 })
+
+local freeToggle, autoToggle, newRollToggle
 
 freeToggle = SkipSec:Toggle({
   Title = "Free Skip",
@@ -186,48 +186,53 @@ freeToggle = SkipSec:Toggle({
   Icon = "fast-forward",
   Value = true,
   Callback = function(s)
-    getgenv().FreeSkip_On = s
+    getenv().FreeSkip_On = s
     if s and autoToggle then pcall(function() autoToggle:Set(false) end) end
   end,
 })
 
-SkipSec:Paragraph({
-  Title = "Informations",
-  Desc = "Custom Auto Roll: Its like a auto roll gamepass.",
+AutoSec:Paragraph({
+  Title = "Custom Auto Roll",
+  Desc = "Its like a auto roll gamepass.",
   Color = "Grey",
 })
 autoToggle = AutoSec:Toggle({
   Title = "Custom Auto Roll",
   Desc = "Recommend to set filters first. Stops on a filter match.",
   Icon = "repeat",
-  Value = getgenv().FreeAutoRoll == true,
+  Value = getenv().FreeAutoRoll == true,
   Callback = function(s)
-    getgenv().FreeAutoRoll = s
+    getenv().FreeAutoRoll = s
     if s and freeToggle then pcall(function() freeToggle:Set(false) end) end
-    if s and rollBaruToggle then pcall(function() rollBaruToggle:Set(false) end) getgenv().FreeRollBaru = false end
+    if s and newRollToggle then pcall(function() newRollToggle:Set(false) end) getenv().NewFreeRoll = false end
   end,
 })
 
-SkipSec:Paragraph({
-  Title = "Informations",
-  Desc = "Fresh Roll: ROLL → CHECK FILTERS → RESTART (If doesn't match with filter). If you're stuck and can't turn on the fresh roll, just click “RESTART” first.",
+AutoSec:Paragraph({
+  Title = "Fresh Roll",
+  Desc = "ROLL → CHECK FILTERS → RESTART (If doesn't match with filter). If you're stuck and can't turn on the fresh roll, just click “RESTART” first.",
   Color = "Grey",
 })
-rollBaruToggle = AutoSec:Toggle({
+newRollToggle = AutoSec:Toggle({
   Title = "Fresh Roll",
   Desc = "Recommend to set filters first. Stops on a filter match.",
   Icon = "refresh-ccw",
-  Value = getgenv().FreeRollBaru == true,
+  Value = getenv().NewFreeRoll == true,
   Callback = function(s)
-    getgenv().FreeRollBaru = s
-    if s and autoToggle then pcall(function() autoToggle:Set(false) end) getgenv().FreeAutoRoll = false end
+    getenv().NewFreeRoll = s
+    if s and autoToggle then pcall(function() autoToggle:Set(false) end) getenv().FreeAutoRoll = false end
   end,
 })
 
+AutoSec:Paragraph({
+  Title = "Fresh Roll",
+  Desc = "ROLL → CHECK FILTERS → RESTART (If doesn't match with filter). If you're stuck and can't turn on the fresh roll, just click “RESTART” first.",
+  Color = "Grey",
+})
 ManSec:Slider({
   Title = "Roll Speed",
   Desc = "Team animation speed (1 = SLOW, 10 = INSTANT)",
-  Value = { Min = 1, Max = 10, Default = getgenv().FreeRollSpeed },
+  Value = { Min = 1, Max = 10, Default = getenv().FreeRollSpeed },
   Step = 1,
   Callback = function(v) applySpeed(v) end,
 })
@@ -245,15 +250,14 @@ ManSec:Button({
   Icon = "octagon-x",
   Color = Color3.fromRGB(255, 100, 100),
   Callback = function()
-    getgenv().FreeAutoRoll = false
-    getgenv().FreeRollBaru = false
+    getenv().FreeAutoRoll = false
+    getenv().NewFreeRoll = false
     pcall(function() autoToggle:Set(false) end)
-    pcall(function() rollBaruToggle:Set(false) end)
+    pcall(function() newRollToggle:Set(false) end)
   end,
 })
 
 local FTab = Window:Tab({ Title = "Filters", Icon = "list-filter" })
-
 local RarSec = FTab:Section({ Title = "Rarity", Icon = "gem", Opened = true })
 local VarSec = FTab:Section({ Title = "Variants", Icon = "sparkles", Opened = true })
 local TeamSec = FTab:Section({ Title = "Teams / Categories", Icon = "shield", Opened = true })
@@ -267,7 +271,7 @@ RarSec:Dropdown({
   Multi = true,
   AllowNone = true,
   Callback = function(s)
-    (getgenv().FreeFilter :: any).Rarities = normalizeList(s);
+    (getenv().FreeFilter :: any).Rarities = normalizeList(s);
     (syncFilters)()
   end,
 })
@@ -280,7 +284,7 @@ VarSec:Dropdown({
   Multi = true,
   AllowNone = true,
   Callback = function(s)
-    (getgenv().FreeFilter :: any).Variants = normalizeList(s);
+    (getenv().FreeFilter :: any).Variants = normalizeList(s);
     (syncFilters)()
   end,
 })
@@ -309,7 +313,7 @@ TeamSec:Dropdown({
   Multi = true,
   AllowNone = true,
   Callback = function(s)
-    (getgenv().FreeFilter :: any).Teams = normalizeList(s);
+    (getenv().FreeFilter :: any).Teams = normalizeList(s);
     (syncFilters)()
   end,
 })
@@ -319,12 +323,10 @@ OvrSec:Slider({
   Desc = "0 = OFF. Extra filter: stops when a card reaches this OVR.",
   Value = { Min = 0, Max = 120, Default = filt.MinOverall or 0 },
   Step = 1,
-  Callback = function(v) (getgenv().FreeFilter :: any).MinOverall = v end,
+  Callback = function(v) (getenv().FreeFilter :: any).MinOverall = v end,
 })
 
--- TAB 3: Settings --
 local STab = Window:Tab({ Title = "Setting", Icon = "settings" })
-
 local KeySec = STab:Section({ Title = "Window", Icon = "keyboard", Opened = true })
 
 KeySec:Dropdown({
@@ -351,14 +353,14 @@ KeySec:Dropdown({
     "Y",
     "F4",
   },
-  Value = getgenv().UIToggleKeyName,
+  Value = getenv().UIToggleKeyName,
   Callback = function(s)
     local pick = s
     if type(s) == "table" then pick = s[1] end
     if type(pick) ~= "string" or pick == "" then return end
     local kc = (Enum.KeyCode :: any)[pick]
     if not kc then return end
-    getgenv().UIToggleKeyName = pick
+    getenv().UIToggleKeyName = pick
     pcall(function() Window:SetToggleKey(kc) end)
     pcall(function() Window:SetAuthor("Enjoy") end)
   end,
@@ -380,20 +382,20 @@ task.spawn(function()
       end)
     end
     local drawing, spinning = false, false
-    pcall(function() drawing = (bstore :: any).Drawing() end)
-    pcall(function() spinning = (bstore :: any).Spinning() end)
-    if (drawing or spinning) and getgenv().FreeSkip_On == true and (os.clock() - lastSkip > 0.4) then
+    pcall(function() drawing = (builderStore :: any).Drawing() end)
+    pcall(function() spinning = (builderStore :: any).Spinning() end)
+    if (drawing or spinning) and getenv().FreeSkip_On == true and (os.clock() - lastSkip > 0.4) then
       lastSkip = os.clock()
-      pcall(function() (bstore :: any).SkipDraw() end)
+      pcall(function() (builderStore :: any).SkipDraw() end)
       pcall(function() storeAny.FinishDraw() end)
       pcall(function()
         local cp = storeAny.CategoryPop()
         if type(cp) == "table" then cp.Duration = 0 end
       end)
     end
-    if getgenv().FreeAutoRoll == true and not drawing and not spinning then
+    if getenv().FreeAutoRoll == true and not drawing and not spinning then
       local cards = nil
-      pcall(function() cards = (bstore :: any).Draw().Cards or {} end)
+      pcall(function() cards = (builderStore :: any).Draw().Cards or {} end)
       local hit = false
       local hitName = ""
       if type(cards) == "table" then
@@ -403,13 +405,13 @@ task.spawn(function()
         end
       end
       if hit then
-        getgenv().FreeAutoRoll = false
+        getenv().FreeAutoRoll = false
         pcall(function() autoToggle:Set(false) end)
         print("[free-auto] STOP: " .. hitName)
         pcall(function() storeAny.SetMessage("AUTO STOP: " .. hitName) end)
       else
         local canRoll = false
-        pcall(function() canRoll = (bstore :: any).CanRoll() end)
+        pcall(function() canRoll = (builderStore :: any).CanRoll() end)
         if canRoll then
           pcall(function() storeAny.Roll() end)
           task.wait(0.6)
@@ -418,9 +420,9 @@ task.spawn(function()
         end
       end
     end
-    if getgenv().FreeRollBaru == true and not drawing and not spinning then
+    if getenv().NewFreeRoll == true and not drawing and not spinning then
       local cards = nil
-      pcall(function() cards = (bstore :: any).Draw().Cards or {} end)
+      pcall(function() cards = (builderStore :: any).Draw().Cards or {} end)
       if type(cards) == "table" and #cards > 0 then
         local hit = false
         local hitName = ""
@@ -429,9 +431,9 @@ task.spawn(function()
           if h then hit = true hitName = n break end
         end
         if hit then
-          getgenv().FreeRollBaru = false
-          pcall(function() rollBaruToggle:Set(false) end)
-          print("[roll-baru] STOP: " .. hitName)
+          getenv().NewFreeRoll = false
+          pcall(function() newRollToggle:Set(false) end)
+          print("[new-roll] STOP: " .. hitName)
           pcall(function() storeAny.SetMessage("FRESH ROLL STOP: " .. hitName) end)
         else
           pcall(function() storeAny.Restart() end)
@@ -439,7 +441,7 @@ task.spawn(function()
         end
       else
         local canRoll = false
-        pcall(function() canRoll = (bstore :: any).CanRoll() end)
+        pcall(function() canRoll = (builderStore :: any).CanRoll() end)
         if canRoll then
           pcall(function() storeAny.Roll() end)
           task.wait(0.6)
