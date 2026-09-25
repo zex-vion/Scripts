@@ -111,57 +111,21 @@ syncFilters()
 
 local function cardHit(c)
   local gf = getenv().FreeFilter :: any
-  local card = c :: any
-  local cardId = card.Id or ""
-  local cardRarity = card.Rarity or ""
-  local cardTeam = card.Team or card.Category or ""
-  
-  -- CHECK 1: Stop on Owned/Duplicate (if enabled)
-  if getenv().FreeStopOnOwned == true and isCardOwned(c) then
-    return true, tostring(card.Name or cardId or "card") .. " (OWNED/DUPLICATE)"
-  end
-  
-  -- CHECK 2: ELUSIVE ALWAYS PRIORITY STOP (when using any auto roll mode)
-  -- If Elusive is explicitly selected in filter OR any auto roll mode is active
-  local isAutoRollActive = getenv().FreeAutoRoll == true or getenv().NewFreeRoll == true
-  local selectedRarities = gf.Rarities or {}
-  local hasElusiveFilter = false
-  for _, r in ipairs(selectedRarities) do
-    if r == "Elusive" then hasElusiveFilter = true break end
-  end
-  if (hasElusiveFilter or isAutoRollActive) and cardRarity == "Elusive" then
-    return true, tostring(card.Name or cardId or "card") .. " (ELUSIVE - PRIORITY STOP)"
-  end
-  
-  -- CHECK 3: Team STOP CONDITION - if user explicitly selected Team(s) in Teams
-  local selectedTeams = gf.Teams or {}
-  if #selectedTeams > 0 then
-    for _, t in ipairs(selectedTeams) do
-      if cardTeam == t then
-        return true, tostring(card.Name or cardId or "card") .. " (TEAM: " .. t .. " - STOP)"
-      end
-    end
-  end
-  
-  -- CHECK 4: Empty filter = stop on any card
   if #(gf.Rarities or {}) == 0 and #(gf.Variants or {}) == 0 and #(gf.Teams or {}) == 0
     and (tonumber(gf.MinOverall) or 0) <= 0 then
-    return true, tostring(card.Name or cardId or "card") .. " (empty filter)"
+    local cc0 = c :: any
+    return true, tostring(cc0.Name or cc0.Id or "card") .. " (empty filter)"
   end
-  
-  -- CHECK 5: Game's built-in filter match (for other rarities: Legendary, Epic, etc. + variants: Shiny, Awakened)
   local ok, m = pcall(function() return storeAny.MatchesAutoRoll(c) end)
   if ok and m then
-    return true, tostring(card.Name or cardId or "card")
+    local cc = c :: any
+    return true, tostring(cc.Name or cc.Id or "card")
   end
-  
-  -- CHECK 6: Min Overall filter
-  local mo = tonumber(gf.MinOverall) or 0
+  local mo = tonumber((getenv().FreeFilter :: any).MinOverall) or 0
   if mo > 0 then
-    local ovr = tonumber(card.Overall or 0) or 0
-    if ovr >= mo then return true, tostring(card.Name or "card") .. " (OVR" .. tostring(card.Overall) .. ")" end
+    local ovr = tonumber((c :: any).Overall or 0) or 0
+    if ovr >= mo then return true, tostring((c :: any).Name or "card") .. " (OVR" .. tostring((c :: any).Overall) .. ")" end
   end
-  
   return false, ""
 end
 
@@ -200,10 +164,9 @@ if HAS_STATE then
     pcall(function() Window:Destroy() end)
   end)
 end
+
 Window:Tag({ Title = "v1.0", Color = Color3.fromHex("#3a3d47") })
-
 local Tab = Window:Tab({ Title = "Builders", Icon = "users" })
-
 local InfoSec = Tab:Section({ Title = "Information", Icon = "info", Opened = true })
 local SkipSec = Tab:Section({ Title = "Fast Skip", Icon = "fast-forward", Opened = true })
 local AutoSec = Tab:Section({ Title = "Auto Modes", Icon = "bot", Opened = true })
@@ -295,7 +258,6 @@ ManSec:Button({
 })
 
 local FTab = Window:Tab({ Title = "Filters", Icon = "list-filter" })
-
 local RarSec = FTab:Section({ Title = "Rarity", Icon = "gem", Opened = true })
 local VarSec = FTab:Section({ Title = "Variants", Icon = "sparkles", Opened = true })
 local TeamSec = FTab:Section({ Title = "Teams / Categories", Icon = "shield", Opened = true })
@@ -364,9 +326,7 @@ OvrSec:Slider({
   Callback = function(v) (getenv().FreeFilter :: any).MinOverall = v end,
 })
 
--- TAB 3: Settings --
 local STab = Window:Tab({ Title = "Setting", Icon = "settings" })
-
 local KeySec = STab:Section({ Title = "Window", Icon = "keyboard", Opened = true })
 
 KeySec:Dropdown({
